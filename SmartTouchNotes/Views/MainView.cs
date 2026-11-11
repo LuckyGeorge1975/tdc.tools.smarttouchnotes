@@ -36,13 +36,16 @@ public sealed class MainView : UserControl
         var newButton = new Button { Content = "Neue Notiz" };
         var listButton = new Button { Content = "Notizen" };
         var undoButton = new Button { Content = "Rückgängig" };
+        var recognizeButton = new Button { Content = "Erkennen" };
         var toolbar = new WrapPanel { Orientation = Orientation.Horizontal };
         toolbar.Children.Add(newButton);
         toolbar.Children.Add(listButton);
         toolbar.Children.Add(undoButton);
+        toolbar.Children.Add(recognizeButton);
         newButton.Click += (_, _) => { SwitchTo(CreateNote()); ShowList(false); };
         listButton.Click += (_, _) => { RefreshList(); ShowList(!_list.IsVisible); };
         undoButton.Click += (_, _) => Undo();
+        recognizeButton.Click += (_, _) => { if (_current.Strokes.Count > 0) StartRecognition(); };
 
         _surface.Note = _current;
         _surface.StrokeStarted = () => _recognition.Invalidate();
@@ -108,7 +111,7 @@ public sealed class MainView : UserControl
     private async void StartRecognition()
     {
         if (_recognizer is UnavailableRecognizer) return;
-        _status.Text = "Handschrift wird erkannt …";
+        _status.Text = "Handschrift wird erkannt; Modell wird bei Bedarf heruntergeladen …";
         var result = await _recognition.RecognizeAsync(_current.Strokes);
         if (result is null) return;
         if (result.Error is not null) { _status.Text = $"Erkennung: {result.Error}"; return; }

@@ -6,7 +6,7 @@ using Avalonia.Android;
 namespace SmartTouchNotes.Android;
 
 [Activity(
-    Label = "SmartTouchNotes.Android",
+    Label = "SmartTouchNotes",
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
     MainLauncher = true,

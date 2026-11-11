@@ -11,6 +11,10 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(EnableDigitalInk)' == 'true'">
+    <DefineConstants>$(DefineConstants);DIGITAL_INK</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <AndroidResource Include="Icon.png">
       <Link>Resources\drawable\Icon.png</Link>
@@ -20,8 +24,13 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" />
     <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" />
+    <PackageReference Include="Xamarin.Google.MLKit.DigitalInk.Recognition" Condition="'$(EnableDigitalInk)' == 'true'" />
+    <PackageReference Include="Xamarin.AndroidX.Tracing.Tracing.Ktx" Condition="'$(EnableDigitalInk)' == 'true'" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(EnableDigitalInk)' != 'true'">
+    <Compile Remove="AndroidInkRecognizer.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartTouchNotes\SmartTouchNotes.csproj" />
   </ItemGroup>

@@ -33,6 +33,40 @@ public class RecognitionTests
         Assert.Equal("Text", (await pending)!.Text);
     }
 
+    [Fact]
+    public async Task LaterRequestWinsEvenWhenEarlierCompletesLast()
+    {
+        var recognizer = new TwoRequestsRecognizer();
+        var coordinator = new RecognitionCoordinator(recognizer, TimeSpan.Zero);
+        var first = coordinator.RecognizeAsync([new InkStroke()]);
+        var second = coordinator.RecognizeAsync([new InkStroke()]);
+        recognizer.Second.SetResult("Neu");
+        Assert.Equal("Neu", (await second)!.Text);
+        recognizer.First.SetResult("Alt");
+        Assert.Null(await first);
+    }
+
+    [Fact]
+    public async Task InvalidationDuringPausePreventsRecognition()
+    {
+        var recognizer = new DelayedRecognizer();
+        var coordinator = new RecognitionCoordinator(recognizer, TimeSpan.FromMinutes(1));
+        var pending = coordinator.RecognizeAsync([new InkStroke()]);
+        coordinator.Invalidate();
+        Assert.Null(await pending);
+        Assert.False(recognizer.Started.Task.IsCompleted);
+    }
+
+    private sealed class TwoRequestsRecognizer : IInkRecognizer
+    {
+        private int _calls;
+        public string Status => "Ready";
+        public TaskCompletionSource<string> First { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource<string> Second { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<string> RecognizeAsync(IReadOnlyList<InkStroke> strokes, CancellationToken cancellationToken) =>
+            Interlocked.Increment(ref _calls) == 1 ? First.Task : Second.Task;
+    }
+
     private sealed class DelayedRecognizer : IInkRecognizer
     {
         public string Status => "Ready";

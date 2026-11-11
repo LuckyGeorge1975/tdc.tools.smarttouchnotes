@@ -16,9 +16,15 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        MainView CreateView() => new(new NoteStore(Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "SmartTouchNotes", "notes.json")), CreateRecognizer());
+        MainView CreateView()
+        {
+            var dataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData,
+                Environment.SpecialFolderOption.Create);
+            if (string.IsNullOrEmpty(dataDirectory))
+                throw new InvalidOperationException("Kein lokales Anwendungsverzeichnis verfügbar.");
+            return new MainView(new NoteStore(Path.Combine(dataDirectory, "SmartTouchNotes", "notes.json")),
+                CreateRecognizer());
+        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = new MainWindow { Content = CreateView() };

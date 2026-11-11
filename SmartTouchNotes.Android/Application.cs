@@ -14,6 +14,9 @@ namespace SmartTouchNotes.Android
 
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
+#if DIGITAL_INK
+            App.CreateRecognizer = () => new AndroidInkRecognizer();
+#endif
             return base.CustomizeAppBuilder(builder)
             .WithInterFont();
         }
