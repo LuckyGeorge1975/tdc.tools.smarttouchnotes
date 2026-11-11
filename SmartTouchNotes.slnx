@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SmartTouchNotes.Android/SmartTouchNotes.Android.csproj" />
+  <Project Path="SmartTouchNotes.Core/SmartTouchNotes.Core.csproj" />
+  <Project Path="SmartTouchNotes.Desktop/SmartTouchNotes.Desktop.csproj" />
+  <Project Path="SmartTouchNotes.Tests/SmartTouchNotes.Tests.csproj" />
+  <Project Path="SmartTouchNotes/SmartTouchNotes.csproj" />
+</Solution>
